@@ -1,0 +1,8 @@
+
+shell = "/bin/bash"
+distro = "ubuntu"
+
+# mintty_bin_path=""
+# ico_name = "ubuntu"
+# title = "wsltty"
+# mintty_config_dir = ""
