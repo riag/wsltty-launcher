@@ -87,7 +87,7 @@ fn main() {
 	//let current_dir = env::current_dir().unwrap();
 	let current_exe = env::current_exe().unwrap();
 	let exe_dir = current_exe.parent().unwrap();
-	let ico_dir = exe_dir.join("ico");
+	let ico_dir = exe_dir.join.("resources").join("ico");
 
 	//println!("Path of this executable is: {}", current_exe.display());
 	//println!("Dir of this executable is: {}", exe_dir.display());
