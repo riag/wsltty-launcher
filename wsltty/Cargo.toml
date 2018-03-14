@@ -1,0 +1,13 @@
+[package]
+name = "wsltty"
+version = "0.1.0"
+authors = ["root"]
+
+[dependencies]
+serde_derive = "1.0.27"
+serde = "1.0.27"
+toml = "0.4"
+
+[[bin]]
+name="wsltty"
+path = "src/wsltty.rs"
