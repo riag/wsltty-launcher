@@ -37,9 +37,9 @@ impl WslttyConfig{
 			ico_name:String::from(""),
 			title: String::from("wsltty"),
 			distro: String::from("ubuntu"),
-			mintty_bin_path: String::from(exe_dir.join("bin/mintty.exe")
+			mintty_bin_path: String::from(exe_dir.join("usr/bin/mintty.exe")
 					.to_str().unwrap()),
-			mintty_config_dir: String::from(exe_dir.join("/etc")
+			mintty_config_dir: String::from(exe_dir.join("etc")
 						.to_str().unwrap())
 		}
 	}
