@@ -39,7 +39,9 @@ class BuildContext(object):
         self.wsltty_dir = os.path.join(curr_dir, 'wsltty')
         self.cargo_bin = os.getenv('CARGO_BIN', 'cargo.exe')
         self.config_dir = os.path.join(curr_dir, 'config')
-        self.ico_dir = os.path.join(curr_dir, 'resources', 'ico')
+        self.resources_dir = os.path.join(curr_dir, 'resources')
+        self.ico_dir = os.path.join(self.resources_dir, 'ico')
+        self.fonts_dir = os.path.join(self.resources_dir, 'fonts')
 
 def copytree(src, dst, symlinks=False, ignore=None):
     for item in os.listdir(src):
@@ -195,8 +197,9 @@ def package(context):
 
     # copy wsltty.exe
     wsltty_bin=os.path.join(context.wsltty_dir, 'target', 'release', 'wsltty.exe')
+    wsltty_dist_name = 'wsltty-%s-%s' % ( wsltty_version, context.platform_machine)
     wsltty_dist_dir = os.path.join(context.dist_dir,
-            'wsltty-%s-%s' % ( wsltty_version, context.platform_machine)
+             wsltty_dist_name       
     )
 
     if os.path.exists(wsltty_dist_dir) and os.path.isdir(wsltty_dist_dir):
@@ -265,6 +268,12 @@ def package(context):
             os.path.join(wsltty_dist_dir, 'resources', 'ico')
     )
 
+    # copy fonts
+    shutil.copytree(
+            context.fonts_dir,
+            os.path.join(wsltty_dist_dir, 'resources', 'fonts')
+    )
+
     # copy license
     shutil.copy(
             os.path.join(curr_dir, 'LICENSE.mintty'),
@@ -276,6 +285,17 @@ def package(context):
             )
 
     generate_version_file(context, wsltty_dist_dir)
+
+    # rm file
+    for m in ['.BUILDINFO','.MTREE', '.PKGINFO']:
+        p = os.path.join(wsltty_dist_dir, m)
+        os.remove(p)
+
+    # zip dir
+    call_shell_command([
+        'zip', '-r', wsltty_dist_name + '.zip',
+        wsltty_dist_name
+        ], work_dir=context.dist_dir)
 
 if __name__ == '__main__':
 
