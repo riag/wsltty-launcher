@@ -265,6 +265,16 @@ def package(context):
             os.path.join(wsltty_dist_dir, 'resources', 'ico')
     )
 
+    # copy license
+    shutil.copy(
+            os.path.join(curr_dir, 'LICENSE.mintty'),
+            wsltty_dist_dir
+            )
+    shutil.copy(
+            os.path.join(curr_dir, 'LICENSE.wslbridge'),
+            wsltty_dist_dir
+            )
+
     generate_version_file(context, wsltty_dist_dir)
 
 if __name__ == '__main__':
