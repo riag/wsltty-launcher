@@ -51,7 +51,7 @@
 
 mintty 与 WSL 相关的说明 https://github.com/mintty/mintty/wiki/Tips
 
-wsltty 的工作原理  https://github.com/rprichard/wslbridge/issues/3
+wslbridge 的工作原理  https://github.com/rprichard/wslbridge/issues/3
 
 
 
