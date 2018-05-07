@@ -14,6 +14,7 @@
 如果还没安装 WSL 下的 Linux，可以使用 [LxRunOffline](https://github.com/DDoSolitary/LxRunOffline) 来安装 WSL 下的 Linux
 
 * 下载文件 
+在[这里](https://github.com/riag/wsltty-portable/releases)下载最新版本
 
 * 修改配置 `wsltty.toml`
 
