@@ -8,7 +8,7 @@ import platform
 
 require_platform = 'msys'
 
-wsltty_version = '0.1.0'
+wsltty_version = '0.1.1'
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
 

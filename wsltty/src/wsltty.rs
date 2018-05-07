@@ -9,7 +9,7 @@ use std::process::Command;
 use std::io::Read;
 use std::fs::File;
 
-const WSLTTY_VERSION:&'static str = "0.1.0";
+const WSLTTY_VERSION:&'static str = "0.1.1";
 
 #[derive(Deserialize)]
 struct TomlConfig{
