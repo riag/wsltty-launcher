@@ -16,10 +16,11 @@ curr_dir = os.path.dirname(os.path.realpath(__file__))
 # mintty 2.8.4 -> ed9f0a14b679ca31daccfafa6dad2b13744ad2a6
 mintty_version_map = {
     '2.8.3': 'f5b7aa6ab9cfa79bebad5cb3c2a03949a1d24423',
-    '2.8.4': 'ed9f0a14b679ca31daccfafa6dad2b13744ad2a6'
+    '2.8.4': 'ed9f0a14b679ca31daccfafa6dad2b13744ad2a6',
+    '2.8.5': 'b6a482792f0f2239f4839a23189ccc5777175b95'
 }
 
-mintty_version='2.8.4'
+mintty_version='2.8.5'
 mintty_msys2_url="https://raw.githubusercontent.com/Alexpux/MSYS2-packages/%s/mintty/" % ( mintty_version_map[mintty_version])
 mintty_url = 'https://github.com/mintty/mintty/archive/%s.tar.gz' %( mintty_version )
 mintty_name = 'mintty-%s' %( mintty_version )
