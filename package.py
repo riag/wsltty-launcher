@@ -14,13 +14,18 @@ curr_dir = os.path.dirname(os.path.realpath(__file__))
 
 # mintty 2.8.3 -> f5b7aa6ab9cfa79bebad5cb3c2a03949a1d24423
 # mintty 2.8.4 -> ed9f0a14b679ca31daccfafa6dad2b13744ad2a6
-mintty_msys2_url="https://raw.githubusercontent.com/Alexpux/MSYS2-packages/%s/mintty/" % ("ed9f0a14b679ca31daccfafa6dad2b13744ad2a6")
+mintty_version_map = {
+    '2.8.3': 'f5b7aa6ab9cfa79bebad5cb3c2a03949a1d24423',
+    '2.8.4': 'ed9f0a14b679ca31daccfafa6dad2b13744ad2a6'
+}
+
 mintty_version='2.8.4'
+mintty_msys2_url="https://raw.githubusercontent.com/Alexpux/MSYS2-packages/%s/mintty/" % ( mintty_version_map[mintty_version])
 mintty_url = 'https://github.com/mintty/mintty/archive/%s.tar.gz' %( mintty_version )
 mintty_name = 'mintty-%s' %( mintty_version )
 
 wslbridge_version = '0.2.4'
-wslbridge_url = 'https://github.com/rprichard/wslbridge/releases/download/0.2.4/%s'
+wslbridge_url = 'https://github.com/rprichard/wslbridge/releases/download/%s/%%s' %(wslbridge_version)
 
 class BuildContext(object):
     def __init__(self, sys_platform, machine, curr_dir, cargo_bin='cargo'):
@@ -197,7 +202,7 @@ def package(context):
 
     # copy wsltty.exe
     wsltty_bin=os.path.join(context.wsltty_dir, 'target', 'release', 'wsltty.exe')
-    wsltty_dist_name = 'wsltty-%s-%s' % ( wsltty_version, context.platform_machine)
+    wsltty_dist_name = 'wsltty-portable-%s-%s' % ( wsltty_version, context.platform_machine)
     wsltty_dist_dir = os.path.join(context.dist_dir,
              wsltty_dist_name       
     )
