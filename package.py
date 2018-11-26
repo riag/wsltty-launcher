@@ -8,7 +8,7 @@ import platform
 
 require_platform = 'msys'
 
-wsltty_version = '0.1.1'
+wsltty_version = '0.2.0'
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -17,10 +17,11 @@ curr_dir = os.path.dirname(os.path.realpath(__file__))
 mintty_version_map = {
     '2.8.3': 'f5b7aa6ab9cfa79bebad5cb3c2a03949a1d24423',
     '2.8.4': 'ed9f0a14b679ca31daccfafa6dad2b13744ad2a6',
-    '2.8.5': 'b6a482792f0f2239f4839a23189ccc5777175b95'
+    '2.8.5': 'b6a482792f0f2239f4839a23189ccc5777175b95',
+    '2.9.4': '37c52820c9e6e2e125585aa743d09ac59d8e57d2',
 }
 
-mintty_version='2.8.5'
+mintty_version='2.9.4'
 mintty_msys2_url="https://raw.githubusercontent.com/Alexpux/MSYS2-packages/%s/mintty/" % ( mintty_version_map[mintty_version])
 mintty_url = 'https://github.com/mintty/mintty/archive/%s.tar.gz' %( mintty_version )
 mintty_name = 'mintty-%s' %( mintty_version )
@@ -303,8 +304,7 @@ def package(context):
         wsltty_dist_name
         ], work_dir=context.dist_dir)
 
-if __name__ == '__main__':
-
+def main():
     context = BuildContext(sys.platform, platform.machine(), curr_dir)
 
     prepare_build(context)
@@ -316,3 +316,7 @@ if __name__ == '__main__':
     after_build(context)
 
     package(context)
+
+if __name__ == '__main__':
+    main()
+
