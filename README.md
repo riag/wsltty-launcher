@@ -1,4 +1,4 @@
-# wsltty-portable
+# wsltty-launcher
  Windows Subsystem for Linux (WSL) 的终端模拟器，基于 [mintty](https://github.com/mintty/mintty) 和 [wslbridge](https://github.com/rprichard/wslbridge) ; 参考了 [wsltty](https://github.com/mintty/wsltty) 和 [wsl-terminal](https://github.com/goreliu/wsl-terminal) 这 2 个项目
 
 
@@ -15,7 +15,7 @@
 
 * 下载文件 
 
-​     在[这里](https://github.com/riag/wsltty-portable/releases)下载最新版本
+​     在[这里](https://github.com/riag/wsltty-launcher/releases)下载最新版本
 
 * 修改配置 `wsltty.toml`
 
@@ -26,18 +26,18 @@
   distro = "ubuntu"
 
   # mintty 的可执行文件路径，
-  # 默认是当前路径下的 ${mintty-portable}/usr/bin/mintty.exe
+  # 默认是 wsltty-launcher 的 usr/bin/mintty.exe
   # mintty_bin_path=""
 
   # mintty 的标题栏的 ico 
-  # 文件名必须是 ${mintty-portable}/resouces/ico 下的文件名
+  # 文件名必须是 resouces/ico 下的文件名
   # ico_name = "ubuntu"
 
   # mintty 的标题
   # title = "wsltty"
 
   # mintty 的配置文件所在目录路径
-  # 默认是当前路径下的 ${mintty-portable}/etc/ 目录
+  # 默认是 wsltty-launcer 的 etc/ 目录
   # mintty_config_dir = ""
   ```
 
@@ -45,7 +45,7 @@
 
 * 安装字体
 
-  双击安装 ${mintty-portable}/resources/fonts 下的 consolas-font-for-powerline 字体文件，mintty 默认配置是使用 [consolas-font-for-powerline]( https://github.com/runsisi/consolas-font-for-powerline) 的字体的
+  双击安装 `resources/fonts` 下的 consolas-font-for-powerline 字体文件，mintty 默认配置是使用 [consolas-font-for-powerline]( https://github.com/runsisi/consolas-font-for-powerline) 的字体的
 
   ​
 
