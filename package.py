@@ -204,7 +204,7 @@ def package(context):
 
     # copy wsltty.exe
     wsltty_bin=os.path.join(context.wsltty_dir, 'target', 'release', 'wsltty.exe')
-    wsltty_dist_name = 'wsltty-portable-%s-%s' % ( wsltty_version, context.platform_machine)
+    wsltty_dist_name = 'wsltty-launcher-%s-%s' % ( wsltty_version, context.platform_machine)
     wsltty_dist_dir = os.path.join(context.dist_dir,
              wsltty_dist_name       
     )
