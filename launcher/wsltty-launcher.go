@@ -92,6 +92,7 @@ func launch_wsltty(config *LauncherConfig, ico_file string, idx int, work_dir st
 	}
 	cmd_list = append(cmd_list, "--")
 	cmd_list = append(cmd_list, "-e")
+	cmd_list = append(cmd_list, "SHELL="+distro_config.Shell)
 	cmd_list = append(cmd_list, distro_config.Shell)
 
 	cmd := exec.Command(cmd_list[0], cmd_list[1:]...)
