@@ -5,10 +5,15 @@ import subprocess
 import sys
 import shutil
 import platform
+import re
+import io
 
 require_platform = 'msys'
 
-wsltty_version = '0.2.0'
+# 从 laucher/wsltty-laucher.go 里读取版本号
+launcher_version = '0.1.0'
+
+version_pattern = r'const\s+version\s+string\s+=\s*\"(.*?)\"'
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -49,6 +54,13 @@ class BuildContext(object):
         self.resources_dir = os.path.join(curr_dir, 'resources')
         self.ico_dir = os.path.join(self.resources_dir, 'ico')
         self.fonts_dir = os.path.join(self.resources_dir, 'fonts')
+
+        launcher_src_file = os.path.join(self.launcher_dir, 'wsltty-launcher.go')
+
+        global launcher_version
+        with io.open(launcher_src_file, 'rt', encoding='utf-8') as f:
+            launcher_version = re.search(version_pattern, f.read()).group(1)
+
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
@@ -220,12 +232,12 @@ def generate_version_file(context, dest_dir):
     with open(p, 'w') as f:
         f.write('mintty = %s\n' % mintty_version)
         f.write('wslbridge = %s\n' % wslbridge_version)
-        f.write('wsltty = %s\n' % wsltty_version)
+        f.write('wsltty-launcher = %s\n' % launcher_version)
 
 
 def package(context):
 
-    wsltty_dist_name = 'wsltty-launcher-%s-%s' % ( wsltty_version, context.platform_machine )
+    wsltty_dist_name = 'wsltty-launcher-%s-%s' % ( launcher_version, context.platform_machine )
     wsltty_dist_dir = os.path.join(context.dist_dir,
              wsltty_dist_name
     )
