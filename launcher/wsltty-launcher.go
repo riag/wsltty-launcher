@@ -35,7 +35,7 @@ type LauncherConfig struct {
 	Shell             string
 	Title             string
 	Icon_name         string
-	debug             bool
+	Debug             bool
 	Mintty_bin_path   string
 	Mintty_config_dir string
 	//work_dir string
@@ -73,10 +73,31 @@ func init_default(exe_dir string, config *LauncherConfig) {
 	}
 }
 
-func launch_wsltty(config *LauncherConfig, ico_file string, idx int) {
+func launch_wsltty(config *LauncherConfig, ico_file string, idx int, work_dir string) {
 	distro_config := config.Distro[idx]
-	cmd := exec.Command(config.Mintty_bin_path, "-i", ico_file, "-t", distro_config.Title, "--WSL="+distro_config.Distro, "--configdir", config.Mintty_config_dir, "-~", "--", "-e", distro_config.Shell)
-	fmt.Println(cmd.Args)
+	var cmd_list []string = make([]string, 0, 100)
+	cmd_list = append(cmd_list, config.Mintty_bin_path)
+	cmd_list = append(cmd_list, "-i")
+	cmd_list = append(cmd_list, ico_file)
+	cmd_list = append(cmd_list, "-t")
+	cmd_list = append(cmd_list, distro_config.Title)
+	cmd_list = append(cmd_list, "--configdir")
+	cmd_list = append(cmd_list, config.Mintty_config_dir)
+	cmd_list = append(cmd_list, "--WSL="+distro_config.Distro)
+	if len(work_dir) == 0 {
+		cmd_list = append(cmd_list, "-~")
+	} else {
+		cmd_list = append(cmd_list, "--dir")
+		cmd_list = append(cmd_list, work_dir)
+	}
+	cmd_list = append(cmd_list, "--")
+	cmd_list = append(cmd_list, "-e")
+	cmd_list = append(cmd_list, distro_config.Shell)
+
+	cmd := exec.Command(cmd_list[0], cmd_list[1:]...)
+	if config.Debug {
+		fmt.Println(cmd.Args)
+	}
 	err := cmd.Start()
 	if err != nil {
 		log.Println("run wsltty failed")
@@ -153,6 +174,7 @@ type argT struct {
 	Slient      bool   `cli:"s,slient" usage:"静默模式"`
 	ConfigFile  string `cli:"config" usage:"指定配置文件"`
 	DistroName  string `cli:"n,name" usage:"指定 distro name"`
+	WorkDir     string `cli:"workdir" usage:"指定 WSL Linux 的工作目录"`
 }
 
 func do_main(argv *argT) {
@@ -184,7 +206,9 @@ func do_main(argv *argT) {
 	}
 
 	idx := choose_distro(argv, &config)
-	fmt.Printf("your choice is %d\n", idx)
+	if config.Debug {
+		fmt.Printf("your choice is %d\n", idx)
+	}
 	if idx < 0 {
 		log.Fatal("not choose andy distro")
 	}
@@ -197,7 +221,7 @@ func do_main(argv *argT) {
 
 	ico_file := filepath.Join(ico_dir, icon_name)
 
-	launch_wsltty(&config, ico_file, idx)
+	launch_wsltty(&config, ico_file, idx, argv.WorkDir)
 }
 
 func main() {
