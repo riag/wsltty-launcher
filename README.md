@@ -7,7 +7,7 @@
 
 * 绿色版；解压后，修改配置文件就可以运行
 * 采用 msys2 编译 mintty
-* 代码更好维护；打包脚本使用 python 开发，wsltty 使用 rust 开发
+* 代码更好维护；打包脚本使用 python3 开发，wsltty-launcher 使用 golang 开发
 
 ## 安装和配置
 
@@ -17,28 +17,40 @@
 
 ​     在[这里](https://github.com/riag/wsltty-launcher/releases)下载最新版本
 
-* 修改配置 `wsltty.toml`
+* 修改配置 `wsltty-launcher.toml`
 
   ```
-  # 默认启动的 shell
-  shell = "/bin/bash"
-  # linux 对应的 distro
-  distro = "ubuntu"
+	# 默认启动的 shell
+	shell = "/bin/bash"
+	# mintty 默认的标题
+	title = "wsltty"
+	# mintty 默认的图标名字
+	# 文件名必须是 resources/ico 下的文件名
+	icon_name = ""
 
-  # mintty 的可执行文件路径，
-  # 默认是 wsltty-launcher 的 usr/bin/mintty.exe
-  # mintty_bin_path=""
+	# mintty 的可执行文件路径，
+	# 默认是 wsltty-launcher 的 usr/bin/mintty.exe
+	mintty_bing_path = ""
+	# mintty 的配置文件所在目录路径
+	# 默认是 wsltty-launcer 的 etc/ 目录
+	mintty_config_dir = ""
 
-  # mintty 的标题栏的 ico 
-  # 文件名必须是 resouces/ico 下的文件名
-  # ico_name = "ubuntu"
+	# WSL Linux distro 对于的配置
+	# 支持多个, launcher 启动时会询问选择哪个distro
+	# 如果不设置 shell, title, icon_name, 使用默认值
 
-  # mintty 的标题
-  # title = "wsltty"
+	#[[distro]]
+	#shell="/usr/bin/zsh"
+	#title="manjaro-linux"
+	#icon_name="manjaro.ico"
+	# 该 distro 显示的名字
+	#name = "manjaro-linux"
+	# WSL Linux distro 名字
+	#distro = "manjaro-linux"
 
-  # mintty 的配置文件所在目录路径
-  # 默认是 wsltty-launcer 的 etc/ 目录
-  # mintty_config_dir = ""
+	#[[distro]]
+	#name = "manjaro-linux-test"
+	#distro = "manjaro-linux-test"
   ```
 
   ​
@@ -48,6 +60,29 @@
   双击安装 `resources/fonts` 下的 consolas-font-for-powerline 字体文件，mintty 默认配置是使用 [consolas-font-for-powerline]( https://github.com/runsisi/consolas-font-for-powerline) 的字体的
 
   ​
+
+* 运行参数 
+ 可以直接运行，如果配置文件里定义了多个 WSL Linux Distro，则会让你选择
+ 也可以使用以下参数运行
+ ```
+	TODO: 添加说明
+ ```
+
+## 编译
+
+安装以下依赖软件
+
+* 在 windows 下安装 golang 和 git，可以使用 scoop 来安装
+* msys2
+* 在 msys2 下安装 python3, binutils, patch, make, gcc, zip
+* 在 msys2 下把 windows 的 golang 的 `bin` 目录加入到 `PATH` 环境变量, 以及 git 的目录加入到 `PATH` 环境变量
+
+执行下面命令编译
+
+```
+python3 pakcage.py
+```
+
 
 ## 
 
