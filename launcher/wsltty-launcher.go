@@ -15,12 +15,6 @@ import (
 
 const version string = "0.3.0"
 
-var (
-	slient      bool
-	config_file string
-	distro_name string
-)
-
 type DistroConfig struct {
 	Shell     string
 	Title     string
@@ -42,8 +36,16 @@ type LauncherConfig struct {
 	Distro []DistroConfig
 }
 
-func init_flag(default_config_file string) {
-	//flag.BoolVar(&slient, "")
+func error_and_exit(slient bool, msg interface{}){
+		log.Println(msg)
+		if !slient{
+				fmt.Println("")
+				fmt.Println("press any key to exit")
+
+				var input string
+				fmt.Scanln(&input)
+		}
+		os.Exit(-1)
 }
 
 func init_default(exe_dir string, config *LauncherConfig) {
@@ -73,7 +75,7 @@ func init_default(exe_dir string, config *LauncherConfig) {
 	}
 }
 
-func launch_wsltty(config *LauncherConfig, ico_file string, idx int, work_dir string) {
+func launch_wsltty(argv * argT, config *LauncherConfig, ico_file string, idx int, work_dir string) {
 	distro_config := config.Distro[idx]
 	var cmd_list []string = make([]string, 0, 100)
 	cmd_list = append(cmd_list, config.Mintty_bin_path)
@@ -102,7 +104,7 @@ func launch_wsltty(config *LauncherConfig, ico_file string, idx int, work_dir st
 	err := cmd.Start()
 	if err != nil {
 		log.Println("run wsltty failed")
-		log.Fatal(err)
+		error_and_exit(argv.Slient, err)
 	}
 }
 
@@ -185,7 +187,7 @@ func do_main(argv *argT) {
 	exe_dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		log.Println("get dir of exe failed")
-		log.Fatal(err)
+		error_and_exit(argv.Slient, err)
 	}
 
 	default_config_file := filepath.Join(exe_dir, "wsltty-launcher.toml")
@@ -198,12 +200,12 @@ func do_main(argv *argT) {
 	var config LauncherConfig
 	_, err = toml.DecodeFile(argv.ConfigFile, &config)
 	if err != nil {
-		log.Fatal("parse toml file failed")
+		error_and_exit(argv.Slient, "parse toml file failed")
 	}
 	init_default(exe_dir, &config)
 
 	if len(config.Distro) == 0 {
-		log.Fatal("not found any distro config")
+		error_and_exit(argv.Slient, "not found any distro config")
 	}
 
 	idx := choose_distro(argv, &config)
@@ -211,7 +213,7 @@ func do_main(argv *argT) {
 		fmt.Printf("your choice is %d\n", idx)
 	}
 	if idx < 0 {
-		log.Fatal("not choose andy distro")
+		error_and_exit(argv.Slient, "not choose andy distro")
 	}
 
 	distro_config := config.Distro[idx]
@@ -222,7 +224,7 @@ func do_main(argv *argT) {
 
 	ico_file := filepath.Join(ico_dir, icon_name)
 
-	launch_wsltty(&config, ico_file, idx, argv.WorkDir)
+	launch_wsltty(argv, &config, ico_file, idx, argv.WorkDir)
 }
 
 func main() {
