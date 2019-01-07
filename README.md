@@ -65,8 +65,15 @@
  可以直接运行，如果配置文件里定义了多个 WSL Linux Distro，则会让你选择
  也可以使用以下参数运行
  ```
-	TODO: 添加说明
+-h, --help      显示帮助信息
+-v, --version   显示版本号
+-s, --slient    静默模式
+    --config    指定配置文件
+-n, --name      指定 distro name
+    --workdir   指定 WSL Linux 的工作目录
  ```
+
+ --name 对应的是配置文件里的 `name` 字段的值
 
 ## 编译
 
