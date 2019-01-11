@@ -137,7 +137,7 @@ func choose_distro(argv *argT, config *LauncherConfig) int {
 			var input string
 			fmt.Scanln(&input)
 			if len(input) == 0 {
-				continue
+				return 0
 			}
 
 			choice, err := strconv.Atoi(input)
