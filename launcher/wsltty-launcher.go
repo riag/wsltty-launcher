@@ -8,12 +8,13 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"golang.org/x/sys/windows/registry"
 
 	"github.com/BurntSushi/toml"
 	"github.com/mkideal/cli"
 )
 
-const version string = "0.3.0"
+const version string = "0.3.2"
 
 type DistroConfig struct {
 	Shell     string
@@ -36,8 +37,16 @@ type LauncherConfig struct {
 	Distro []DistroConfig
 }
 
+type LxssInfo struct {
+		Name 			string
+		Guid			string
+		BasePath  string
+}
+
 func error_and_exit(slient bool, msg interface{}){
-		log.Println(msg)
+	 	if msg != nil {
+			log.Println(msg)
+		}
 		if !slient{
 				fmt.Println("")
 				fmt.Println("press any key to exit")
@@ -75,8 +84,61 @@ func init_default(exe_dir string, config *LauncherConfig) {
 	}
 }
 
+//Software\\Microsoft\\Windows\\CurrentVersion\\Lxss\\
+func get_all_lxss_info() map[string]LxssInfo{
+
+		var lxss_info_map = make(map[string]LxssInfo)
+
+		key, err := registry.OpenKey(
+			registry.CURRENT_USER,
+			"Software\\Microsoft\\Windows\\CurrentVersion\\Lxss\\", registry.READ)
+		if err != nil{
+			fmt.Println("open lxss key failed")
+			return lxss_info_map
+		}
+
+		defer key.Close()
+
+		sub_keys, _  := key.ReadSubKeyNames(0)
+
+		for _, k := range sub_keys {
+				lxss_info := LxssInfo{}
+				lxss_info.Guid = k
+
+				sub_key, _ := registry.OpenKey(key, k, registry.READ)
+				value, _, _ := sub_key.GetStringValue("DistributionName")
+
+				lxss_info.Name = value
+
+				value, _, _ = sub_key.GetStringValue("BasePath")
+
+				lxss_info.BasePath = value
+
+				lxss_info_map[lxss_info.Name] = lxss_info
+
+				sub_key.Close()
+		}
+
+
+		return lxss_info_map
+}
+
 func launch_wsltty(argv * argT, config *LauncherConfig, ico_file string, idx int, work_dir string) {
 	distro_config := config.Distro[idx]
+
+	var lxss_info_map = get_all_lxss_info()
+	lxss_info, ok := lxss_info_map[distro_config.Distro]
+	if ok != true {
+		fmt.Println("not found any lxss info")
+		error_and_exit(argv.Slient, nil)
+	}
+
+	var wsl_rootfs_path = filepath.Join(lxss_info.BasePath, "rootfs")
+	wsl_rootfs_path = strings.Replace(wsl_rootfs_path, ":\\", "/", 1)
+	wsl_rootfs_path = strings.Replace(wsl_rootfs_path, "\\", "/", -1)
+	wsl_rootfs_path = strings.ToLower(wsl_rootfs_path[0:1]) + wsl_rootfs_path[1:]
+	wsl_rootfs_path = "/mnt/" + wsl_rootfs_path
+
 	var cmd_list []string = make([]string, 0, 100)
 	cmd_list = append(cmd_list, config.Mintty_bin_path)
 	cmd_list = append(cmd_list, "-i")
@@ -95,6 +157,12 @@ func launch_wsltty(argv * argT, config *LauncherConfig, ico_file string, idx int
 	cmd_list = append(cmd_list, "--")
 	cmd_list = append(cmd_list, "-e")
 	cmd_list = append(cmd_list, "SHELL="+distro_config.Shell)
+	cmd_list = append(cmd_list, "-e")
+	cmd_list = append(cmd_list, "WSL_DISTRO_NAME="+distro_config.Name)
+	cmd_list = append(cmd_list, "-e")
+	cmd_list = append(cmd_list, "WSL_DISTRO_GUID="+lxss_info.Guid)
+	cmd_list = append(cmd_list, "-e")
+	cmd_list = append(cmd_list, "WSL_DISTRO_ROOTFS_DIR="+wsl_rootfs_path)
 	cmd_list = append(cmd_list, distro_config.Shell)
 
 	cmd := exec.Command(cmd_list[0], cmd_list[1:]...)
