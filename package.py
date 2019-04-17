@@ -162,8 +162,6 @@ def build_wsltty(context):
 
 
 def build_launcher(context):
-    cmd = 'powershell -File depend.ps1'
-    call_shell_command(cmd, work_dir=context.launcher_dir, shell=True)
 
     cmd = 'powershell -File build.ps1'
     call_shell_command(cmd, work_dir=context.launcher_dir, shell=True)
