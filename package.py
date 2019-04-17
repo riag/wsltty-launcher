@@ -25,10 +25,11 @@ mintty_version_map = {
     '2.8.5': 'b6a482792f0f2239f4839a23189ccc5777175b95',
     '2.9.4': '37c52820c9e6e2e125585aa743d09ac59d8e57d2',
     '2.9.5': 'f969bc9f861b95b47a81b0c9452d75d69ccf5b75',
+    '3.0.0': 'ecaf326b9769caaf398b658eef5c24af64bb6d38',
 }
 
-mintty_version = '2.9.5'
-mintty_msys2_url = "https://raw.githubusercontent.com/Alexpux/MSYS2-packages/%s/mintty/" % (mintty_version_map[mintty_version])
+mintty_version = '3.0.0'
+mintty_msys2_url = "https://raw.githubusercontent.com/riag/MSYS2-packages/%s/mintty/" % (mintty_version_map[mintty_version])
 mintty_url = 'https://github.com/mintty/mintty/archive/%s.tar.gz' % (mintty_version)
 mintty_name = 'mintty-%s' % (mintty_version)
 
