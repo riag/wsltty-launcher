@@ -8,6 +8,13 @@
 * 绿色版；解压后，修改配置文件就可以运行
 * 采用 msys2 编译 mintty
 * 代码更好维护；打包脚本使用 python3 开发，wsltty-launcher 使用 golang 开发
+* 从 0.3.2 版本开始自动设置以下 3 个环境变量，方便与 [pywslpath](https://github.com/riag/pywslpath) 配合一起使用
+  ```
+    WSL_DISTRO_NAME 当前 WSL Linux 的 distro name
+    WSL_DISTRO_GUID 当前 WSL Linux 的 distro guid
+    WSL_DISTRO_ROOTFS_DIR 当前 WSL Linux 的 distro rootfs 路径
+  ```
+
 
 ## 安装和配置
 
