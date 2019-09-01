@@ -210,7 +210,7 @@ func choose_distro(argv *argT, config *LauncherConfig) int {
 		}
 		fmt.Println("")
 		for i := 0; i < 10; i++ {
-			fmt.Printf("please choose distro:")
+			fmt.Printf("please choose distro [default: 0]:")
 			var input string
 			fmt.Scanln(&input)
 			if len(input) == 0 {
