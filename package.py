@@ -175,10 +175,13 @@ def build_wsltty(context):
 
 def build_launcher(context):
 
+    laucher_bin = os.path.join(context.launcher_dir, 'wsltty-launcher.exe')
+    if os.path.isfile(laucher_bin):
+            os.remove(laucher_bin)
+
     cmd = 'powershell -File build.ps1'
     call_shell_command(cmd, work_dir=context.launcher_dir, shell=True)
 
-    laucher_bin = os.path.join(context.launcher_dir, 'wsltty-launcher.exe')
     if not os.path.exists(laucher_bin):
         print("build launcher failed")
         sys.exit(-1)
@@ -344,6 +347,8 @@ def package(context):
     for m in ['.BUILDINFO', '.MTREE', '.PKGINFO']:
         p = os.path.join(wsltty_dist_dir, m)
         os.remove(p)
+
+    os.makedirs(os.path.join(context.dist_dir, 'logs'))
 
     # zip dir
     call_shell_command([
