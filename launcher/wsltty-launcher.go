@@ -14,7 +14,7 @@ import (
 	"github.com/mkideal/cli"
 )
 
-const version string = "0.3.4"
+const version string = "0.3.5"
 
 type DistroConfig struct {
 	Shell     string
@@ -33,6 +33,7 @@ type LauncherConfig struct {
 	Debug             bool
 	Mintty_bin_path   string
 	Mintty_config_dir string
+	LogFile			  string
 	//work_dir string
 	Distro []DistroConfig
 }
@@ -69,6 +70,9 @@ func init_default(exe_dir string, config *LauncherConfig) {
 	}
 	if len(config.Mintty_config_dir) == 0 {
 		config.Mintty_config_dir = filepath.Join(exe_dir, "etc")
+	}
+	if len(config.LogFile) == 0 {
+		config.LogFile = filepath.Join(exe_dir, "logs", "wsltty.log")
 	}
 	//init Distro
 	for _, d := range config.Distro {
@@ -153,6 +157,11 @@ func launch_wsltty(argv * argT, config *LauncherConfig, ico_file string, idx int
 	} else {
 		cmd_list = append(cmd_list, "--dir")
 		cmd_list = append(cmd_list, work_dir)
+	}
+	cmd_list = append(cmd_list, "--log")
+	cmd_list = append(cmd_list, config.LogFile)
+	if(config.Debug){
+		cmd_list = append(cmd_list, "-h always")
 	}
 	cmd_list = append(cmd_list, "--")
 	cmd_list = append(cmd_list, "-e")
