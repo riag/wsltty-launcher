@@ -158,6 +158,7 @@ func launch_wsltty(argv * argT, config *LauncherConfig, ico_file string, idx int
 		cmd_list = append(cmd_list, "--dir")
 		cmd_list = append(cmd_list, work_dir)
 	}
+    cmd_list = append(cmd_list, "-w max")
 	cmd_list = append(cmd_list, "--log")
 	cmd_list = append(cmd_list, config.LogFile)
 	if(config.Debug){
