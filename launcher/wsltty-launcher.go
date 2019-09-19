@@ -33,7 +33,6 @@ type LauncherConfig struct {
 	Debug             bool
 	Mintty_bin_path   string
 	Mintty_config_dir string
-	LogFile			  string
 	//work_dir string
 	Distro []DistroConfig
 }
@@ -70,9 +69,6 @@ func init_default(exe_dir string, config *LauncherConfig) {
 	}
 	if len(config.Mintty_config_dir) == 0 {
 		config.Mintty_config_dir = filepath.Join(exe_dir, "etc")
-	}
-	if len(config.LogFile) == 0 {
-		config.LogFile = filepath.Join(exe_dir, "logs", "wsltty.log")
 	}
 	//init Distro
 	for _, d := range config.Distro {
@@ -127,7 +123,7 @@ func get_all_lxss_info() map[string]LxssInfo{
 		return lxss_info_map
 }
 
-func launch_wsltty(argv * argT, config *LauncherConfig, ico_file string, idx int, work_dir string) {
+func launch_wsltty(argv * argT, config *LauncherConfig, idx int, ico_file string, log_file string, work_dir string) {
 	distro_config := config.Distro[idx]
 
 	var lxss_info_map = get_all_lxss_info()
@@ -151,6 +147,7 @@ func launch_wsltty(argv * argT, config *LauncherConfig, ico_file string, idx int
 	cmd_list = append(cmd_list, distro_config.Title)
 	cmd_list = append(cmd_list, "--configdir")
 	cmd_list = append(cmd_list, config.Mintty_config_dir)
+    cmd_list = append(cmd_list, "-w max")
 	cmd_list = append(cmd_list, "--WSL="+distro_config.Distro)
 	if len(work_dir) == 0 {
 		cmd_list = append(cmd_list, "-~")
@@ -158,9 +155,8 @@ func launch_wsltty(argv * argT, config *LauncherConfig, ico_file string, idx int
 		cmd_list = append(cmd_list, "--dir")
 		cmd_list = append(cmd_list, work_dir)
 	}
-    cmd_list = append(cmd_list, "-w max")
 	cmd_list = append(cmd_list, "--log")
-	cmd_list = append(cmd_list, config.LogFile)
+	cmd_list = append(cmd_list, log_file)
 	if(config.Debug){
 		cmd_list = append(cmd_list, "-h always")
 	}
@@ -302,7 +298,10 @@ func do_main(argv *argT) {
 
 	ico_file := filepath.Join(ico_dir, icon_name)
 
-	launch_wsltty(argv, &config, ico_file, idx, argv.WorkDir)
+	log_file := filepath.Join(exe_dir, "logs", distro_config.Name + ".log")
+	os.Remove(log_file)
+
+	launch_wsltty(argv, &config, idx, ico_file, log_file, argv.WorkDir)
 }
 
 func main() {
