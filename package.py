@@ -348,7 +348,9 @@ def package(context):
         p = os.path.join(wsltty_dist_dir, m)
         os.remove(p)
 
-    os.makedirs(os.path.join(context.dist_dir, 'logs'))
+    log_dir = os.path.join(wsltty_dist_dir, 'logs')
+    if not os.path.isdir(log_dir):
+        os.makedirs(log_dir)
 
     # zip dir
     call_shell_command([
