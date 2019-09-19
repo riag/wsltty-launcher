@@ -4,6 +4,7 @@ title = "wsltty"
 icon_name = ""
 mintty_bing_path = ""
 mintty_config_dir = ""
+debug = true
 
 #[[distro]]
 #shell="/usr/bin/zsh"
