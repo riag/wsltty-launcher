@@ -14,7 +14,7 @@ import (
 	"github.com/mkideal/cli"
 )
 
-const version string = "0.3.5"
+const version string = "0.4.0"
 
 type DistroConfig struct {
 	Shell     string
