@@ -7,6 +7,7 @@ import shutil
 import platform
 import re
 import io
+import py7zr
 
 require_platform = 'msys'
 
@@ -27,6 +28,7 @@ mintty_version_map = {
     '2.9.5': 'f969bc9f861b95b47a81b0c9452d75d69ccf5b75',
     '3.0.0': 'ecaf326b9769caaf398b658eef5c24af64bb6d38',
     '3.0.2': 'fe045cbe3c47d274e99f477d90589354fcd4458c',
+    '3.1.0': '368a8b5e7db3370d4e9f2b9d7164087b76decb92',
 }
 
 mintty_patch_files_map = {
@@ -35,15 +37,22 @@ mintty_patch_files_map = {
                 '0002-add-msys2-launcher.patch',
                 '8be3ff0d918058b56ba0d1bc26eea25b875ab929.patch'
                 ],
+        '3.1.0':[
+                'PKGBUILD',
+                '0002-add-msys2-launcher.patch',
+                ],
 }
 
-mintty_version = '3.0.2'
+mintty_version = '3.1.0'
 mintty_msys2_url = "https://raw.githubusercontent.com/riag/MSYS2-packages/%s/mintty/" % (mintty_version_map[mintty_version])
 mintty_url = 'https://github.com/mintty/mintty/archive/%s.tar.gz' % (mintty_version)
 mintty_name = 'mintty-%s' % (mintty_version)
 
 wslbridge_version = '0.2.4'
 wslbridge_url = 'https://github.com/rprichard/wslbridge/releases/download/%s/%%s' % (wslbridge_version)
+
+wslbridge2_version = 'v0.5'
+wslbridge2_url = 'https://github.com/Biswa96/wslbridge2/releases/download/%s/%%s' % (wslbridge2_version)
 
 
 class BuildContext(object):
@@ -164,15 +173,6 @@ def build_mintty(context):
     shutil.copy('/usr/bin/cygwin-console-helper.exe', mintty_bin_dir)
 
 
-def build_wsltty(context):
-
-    cmd = '%s clean' % context.cargo_bin
-    call_shell_command(cmd, work_dir=context.wsltty_dir, shell=True)
-
-    cmd = '%s build --release' % context.cargo_bin
-    call_shell_command(cmd, work_dir=context.wsltty_dir, shell=True)
-
-
 def build_launcher(context):
 
     laucher_bin = os.path.join(context.launcher_dir, 'wsltty-launcher.exe')
@@ -193,6 +193,17 @@ def make_wslbrigde_name(context):
 
 def make_wslbrigde_archive(context):
     return '%s.tar.gz' % (make_wslbrigde_name(context))
+
+
+def make_wslbrigde2_name(context, with_version=False):
+    if with_version:
+        return 'wslbridge2-%s_x86_64' % (context.platform_machine)
+    else:
+        return 'wslbridge2-%s-%s_x86_64' % (wslbridge2_version, context.platform_machine)
+
+
+def make_wslbrigde2_archive(context, with_version=False):
+    return '%s.7z' % (make_wslbrigde2_name(context), with_version)
 
 
 def download_file(url, path, work_dir):
@@ -224,16 +235,25 @@ def download_wslbridge(context):
         if not os.path.exists(wslbridge_archive_path) or not os.path.isfile(wslbridge_archive_path):
                 download_file(url, wslbridge_archive, context.download_dir)
 
+def download_wslbridge2(context):
+        wslbridge2_archive = make_wslbrigde2_archive(context, False)
+        url = wslbridge2_url % wslbridge2_archive
+
+        wslbridge2_archive_version = make_wslbrigde2_archive(context, True)
+        wslbridge2_archive_path = os.path.join(
+                context.download_dir,
+                wslbridge2_archive_version)
+        if not os.path.exists(wslbridge_archive_path) or not os.path.isfile(wslbridge_archive_path):
+                download_file(url, wslbridge2_archive_version, context.download_dir)
 
 def download(context):
-    download_wslbridge(context)
+    download_wslbridge2(context)
 
 
 def build(context):
 
     build_mintty(context)
 
-    # build_wsltty(context)
     build_launcher(context)
 
 
@@ -245,7 +265,7 @@ def generate_version_file(context, dest_dir):
     p = os.path.join(dest_dir, 'version.txt')
     with open(p, 'w') as f:
         f.write('mintty = %s\n' % mintty_version)
-        f.write('wslbridge = %s\n' % wslbridge_version)
+        f.write('wslbridge2 = %s\n' % wslbridge2_version)
         f.write('wsltty-launcher = %s\n' % launcher_version)
 
 
@@ -285,26 +305,29 @@ def package(context):
     # copy dist/mintty to dist/wsltty
     copytree(mintty_dist_dir, wsltty_dist_dir)
 
-    # copy wslbrigde to dist/wsltty
+    # copy wslbrigde2 to dist/wsltty
 
     mintty_bin_dir = os.path.join(wsltty_dist_dir, 'usr', 'bin')
 
-    wslbridge_name = make_wslbrigde_name(context)
-    wslbridge_name_archive = make_wslbrigde_archive(context)
-    wslbrigde_dir = os.path.join(
+    wslbridge2_name = make_wslbrigde2_name(context, True)
+    wslbridge2_name_archive = make_wslbrigde2_archive(context, True)
+    wslbrigde2_dir = os.path.join(
             context.download_dir,
-            wslbridge_name
+            wslbridge2_name
             )
-    if not os.path.exists(wslbrigde_dir) or not os.path.isdir(wslbrigde_dir):
-            call_shell_command([
-                    'tar', 'xfz', wslbridge_name_archive
-                    ], work_dir=context.download_dir
-            )
+    if not os.path.exists(wslbrigde2_dir) or not os.path.isdir(wslbrigde2_dir):
+            archive = py7zr.SevenZipFile(wslbridge2_name_archive, mode='x')
+            archive.extractall(path=wslbridge2_dir)
+            archive.close()
+
     shutil.copy(
-            os.path.join(wslbrigde_dir, 'wslbridge.exe'),
+            os.path.join(wslbrigde2_dir, 'wslbridge2.exe'),
             mintty_bin_dir)
     shutil.copy(
-            os.path.join(wslbrigde_dir, 'wslbridge-backend'),
+            os.path.join(wslbrigde2_dir, 'wslbridge2-backend'),
+            mintty_bin_dir)
+    shutil.copy(
+            os.path.join(wslbrigde2_dir, 'rawpty.exe'),
             mintty_bin_dir)
 
     # copy config file to dist/wsltty
