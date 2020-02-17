@@ -44,7 +44,8 @@ mintty_patch_files_map = {
 }
 
 mintty_version = '3.1.0'
-mintty_msys2_url = "https://raw.githubusercontent.com/riag/MSYS2-packages/%s/mintty/" % (mintty_version_map[mintty_version])
+#mintty_msys2_url = "https://raw.githubusercontent.com/riag/MSYS2-packages/%s/mintty/" % (mintty_version_map[mintty_version])
+mintty_msys2_url = "https://gitee.com/riag/MSYS2-packages/raw/%s/mintty/" % (mintty_version_map[mintty_version])
 mintty_url = 'https://github.com/mintty/mintty/archive/%s.tar.gz' % (mintty_version)
 mintty_name = 'mintty-%s' % (mintty_version)
 
@@ -135,7 +136,9 @@ def prepare_build(context):
 
 
 def download_mintty(work_dir):
-    download_file(mintty_url, mintty_name + '.tar.gz', work_dir)
+    p = os.path.join(work_dir, mintty_name + '.tar.gz')
+    if not os.path.exists(p) or os.path.isfile(p):
+        download_file(mintty_url, mintty_name + '.tar.gz', work_dir)
 
 
 def build_mintty(context):
@@ -196,14 +199,17 @@ def make_wslbrigde_archive(context):
 
 
 def make_wslbrigde2_name(context, with_version=False):
+    sys_platform = context.sys_platform
+    if sys_platform.startswith('msys'):
+        sys_platform = 'msys2'
     if with_version:
-        return 'wslbridge2-%s_x86_64' % (context.platform_machine)
+        return 'wslbridge2_%s_%s_x86_64' % (wslbridge2_version, sys_platform)
     else:
-        return 'wslbridge2-%s-%s_x86_64' % (wslbridge2_version, context.platform_machine)
+        return 'wslbridge2_%s_x86_64' % (sys_platform)
 
 
 def make_wslbrigde2_archive(context, with_version=False):
-    return '%s.7z' % (make_wslbrigde2_name(context), with_version)
+    return '%s.7z' % (make_wslbrigde2_name(context, with_version))
 
 
 def download_file(url, path, work_dir):
@@ -238,12 +244,13 @@ def download_wslbridge(context):
 def download_wslbridge2(context):
         wslbridge2_archive = make_wslbrigde2_archive(context, False)
         url = wslbridge2_url % wslbridge2_archive
+        print(url)
 
         wslbridge2_archive_version = make_wslbrigde2_archive(context, True)
         wslbridge2_archive_path = os.path.join(
                 context.download_dir,
                 wslbridge2_archive_version)
-        if not os.path.exists(wslbridge_archive_path) or not os.path.isfile(wslbridge_archive_path):
+        if not os.path.exists(wslbridge2_archive_path) or not os.path.isfile(wslbridge2_archive_path):
                 download_file(url, wslbridge2_archive_version, context.download_dir)
 
 def download(context):
