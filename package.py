@@ -20,32 +20,8 @@ curr_dir = os.path.dirname(os.path.realpath(__file__))
 
 # mintty 2.8.3 -> f5b7aa6ab9cfa79bebad5cb3c2a03949a1d24423
 # mintty 2.8.4 -> ed9f0a14b679ca31daccfafa6dad2b13744ad2a6
-mintty_version_map = {
-    '2.8.3': 'f5b7aa6ab9cfa79bebad5cb3c2a03949a1d24423',
-    '2.8.4': 'ed9f0a14b679ca31daccfafa6dad2b13744ad2a6',
-    '2.8.5': 'b6a482792f0f2239f4839a23189ccc5777175b95',
-    '2.9.4': '37c52820c9e6e2e125585aa743d09ac59d8e57d2',
-    '2.9.5': 'f969bc9f861b95b47a81b0c9452d75d69ccf5b75',
-    '3.0.0': 'ecaf326b9769caaf398b658eef5c24af64bb6d38',
-    '3.0.2': 'fe045cbe3c47d274e99f477d90589354fcd4458c',
-    '3.1.0': '368a8b5e7db3370d4e9f2b9d7164087b76decb92',
-}
 
-mintty_patch_files_map = {
-        '3.0.2':[
-                'PKGBUILD',
-                '0002-add-msys2-launcher.patch',
-                '8be3ff0d918058b56ba0d1bc26eea25b875ab929.patch'
-                ],
-        '3.1.0':[
-                'PKGBUILD',
-                '0002-add-msys2-launcher.patch',
-                ],
-}
-
-mintty_version = '3.1.0'
-#mintty_msys2_url = "https://raw.githubusercontent.com/riag/MSYS2-packages/%s/mintty/" % (mintty_version_map[mintty_version])
-mintty_msys2_url = "https://gitee.com/riag/MSYS2-packages/raw/%s/mintty/" % (mintty_version_map[mintty_version])
+mintty_version = '3.1.4'
 mintty_url = 'https://github.com/mintty/mintty/archive/%s.tar.gz' % (mintty_version)
 mintty_name = 'mintty-%s' % (mintty_version)
 
@@ -75,6 +51,7 @@ class BuildContext(object):
         self.resources_dir = os.path.join(curr_dir, 'resources')
         self.ico_dir = os.path.join(self.resources_dir, 'ico')
         self.fonts_dir = os.path.join(self.resources_dir, 'fonts')
+        self.scripts_dir = os.path.join(self.curr_dir, 'scripts')
 
         launcher_src_file = os.path.join(self.launcher_dir, 'wsltty-launcher.go')
 
@@ -142,20 +119,13 @@ def download_mintty(work_dir):
 
 
 def build_mintty(context):
-    build_scripts = mintty_patch_files_map.get(mintty_version, None)
-    if build_scripts is None:
-        build_scripts = [
-                '0002-add-msys2-launcher.patch',
-                '0003-fix-current-dir-inheritance-for-alt-f2-on-msys2.patch' ,
-                'PKGBUILD'
-                ]
-    for s in build_scripts:
-        u = mintty_msys2_url + s
-        # call_shell_command([
-        #    'wget', '-O',
-        #    os.path.join(context.mintty_dir, s), u]
-        #    )
-        download_file(u, s, context.mintty_dir)
+
+    patch_files_dir = os.path.join(context.scripts_dir, 'mintty', mintty_version)
+    if not os.path.is_dir(patch_files_dir):
+        print("mintty patch file dir [%s] is not exist" % patch_files_dir, file=sys.stderr) 
+        sys.exit(-1) 
+
+    copytree(patch_files_dir, context.mintty_dir)
 
     mintty_src_archive = os.path.join(context.download_dir, mintty_name + '.tar.gz')
     if not os.path.exists(mintty_src_archive) or not os.path.isfile(mintty_src_archive):
