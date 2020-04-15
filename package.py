@@ -7,7 +7,6 @@ import shutil
 import platform
 import re
 import io
-import py7zr
 
 require_platform = 'msys'
 
@@ -51,7 +50,7 @@ class BuildContext(object):
         self.resources_dir = os.path.join(curr_dir, 'resources')
         self.ico_dir = os.path.join(self.resources_dir, 'ico')
         self.fonts_dir = os.path.join(self.resources_dir, 'fonts')
-        self.scripts_dir = os.path.join(self.curr_dir, 'scripts')
+        self.scripts_dir = os.path.join(curr_dir, 'scripts')
 
         launcher_src_file = os.path.join(self.launcher_dir, 'wsltty-launcher.go')
 
@@ -121,7 +120,7 @@ def download_mintty(work_dir):
 def build_mintty(context):
 
     patch_files_dir = os.path.join(context.scripts_dir, 'mintty', mintty_version)
-    if not os.path.is_dir(patch_files_dir):
+    if not os.path.isdir(patch_files_dir):
         print("mintty patch file dir [%s] is not exist" % patch_files_dir, file=sys.stderr) 
         sys.exit(-1) 
 
@@ -288,23 +287,28 @@ def package(context):
 
     wslbridge2_name = make_wslbrigde2_name(context, True)
     wslbridge2_name_archive = make_wslbrigde2_archive(context, True)
-    wslbrigde2_dir = os.path.join(
+    wslbridge2_dir = os.path.join(
             context.download_dir,
             wslbridge2_name
             )
-    if not os.path.exists(wslbrigde2_dir) or not os.path.isdir(wslbrigde2_dir):
-            archive = py7zr.SevenZipFile(wslbridge2_name_archive, mode='x')
-            archive.extractall(path=wslbridge2_dir)
-            archive.close()
+    wslbridge2_file = os.path.join(
+        context.download_dir, wslbridge2_name_archive
+    )
+
+    # 解压 wslbridge2 7z 文件
+    call_shell_command([
+        '7za', 'x', wslbridge2_file, '-r', '-y',
+        '-o%s' % wslbridge2_dir
+        ])
 
     shutil.copy(
-            os.path.join(wslbrigde2_dir, 'wslbridge2.exe'),
+            os.path.join(wslbridge2_dir, 'wslbridge2.exe'),
             mintty_bin_dir)
     shutil.copy(
-            os.path.join(wslbrigde2_dir, 'wslbridge2-backend'),
+            os.path.join(wslbridge2_dir, 'wslbridge2-backend'),
             mintty_bin_dir)
     shutil.copy(
-            os.path.join(wslbrigde2_dir, 'rawpty.exe'),
+            os.path.join(wslbridge2_dir, 'rawpty.exe'),
             mintty_bin_dir)
 
     # copy config file to dist/wsltty
