@@ -17,10 +17,7 @@ version_pattern = r'const\s+version\s+string\s+=\s*\"(.*?)\"'
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
 
-# mintty 2.8.3 -> f5b7aa6ab9cfa79bebad5cb3c2a03949a1d24423
-# mintty 2.8.4 -> ed9f0a14b679ca31daccfafa6dad2b13744ad2a6
-
-mintty_version = '3.1.4'
+mintty_version = '3.2.0'
 mintty_url = 'https://github.com/mintty/mintty/archive/%s.tar.gz' % (mintty_version)
 mintty_name = 'mintty-%s' % (mintty_version)
 
